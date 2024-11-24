@@ -75,14 +75,16 @@ public class BitTree {
    * is formatted incorrectly.
    */
   public void set(String bits, String value) {
-    if (bits.length() != depth) {
-      throw new IndexOutOfBoundsException();
-    } // if
-    Stream<Character> cstream = Arrays.stream(bits.toCharArray());
+    char[] cArray = bits.toCharArray();
     BitTreeNode node = this.head;
 
+    if (cArray.length != depth ||
+	!Arrays.stream(cArr).allMatch(b -> b.equals('0') || b.equals('1'))) {
+      throw new IndexOutOfBoundsException();
+    } // if
+    
     // The last element may not be an interior node.
-    cstream.limit(depth - 1).forEach(b -> {
+    Arrays.stream(cArr).limit(depth - 1).forEach(b -> {
 	if (node.traverse(b) == null) {
 	  node.traverse(b) = new BitTreeInteriorNode(null, null);
 	} // if
@@ -126,7 +128,7 @@ public class BitTree {
    *   bytes, file, etc.
    */
   public void load(Reader source) {
-    Stream<String> lines = (new BufferedReader(source)).lines();
-    lines.forEach(l -> this.set(l.substring(0, depth), l.substring(depth)));
+    BufferedReader sourceBuf = new BufferedReader(source);
+    source.lines().forEach(l -> this.set(l.substring(0, depth), l.substring(depth)));
   } // load(InputStream)
 } // class BitTree
