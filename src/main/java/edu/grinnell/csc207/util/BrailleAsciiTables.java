@@ -5,9 +5,10 @@ import java.io.InputStream;
 import java.io.IOException;
 
 /**
- *
- *
- * @author Your Name Here
+ * A static structure that creates and allows the inspection of
+ * Braille-ASCII-Unicode conversion bit trees.
+ * 
+ * @author Andrew Fargo
  * @author Samuel A. Rebelsky
  */
 public class BrailleAsciiTables {
@@ -179,17 +180,17 @@ public class BrailleAsciiTables {
   // +---------------+
 
   /**
-   *
+   * Our ASCII->Braille tree.
    */
   static BitTree a2bTree;
 
   /**
-   *
+   * Our Braille->ASCII tree.
    */
   static BitTree b2aTree;
 
   /**
-   *
+   * Our Braille->Unicode tree.
    */
   static BitTree b2uTree;
 
@@ -198,10 +199,7 @@ public class BrailleAsciiTables {
   // +-----------------------+
 
   static {
-    // This code definitely calls for better organization.
-    // Perhaps extend the BitTree to include a table?
-    // It's difficult to say what may be best; for now this is good.
-    sReader = new StringReader(a2b);
+    StringReader sReader = new StringReader(a2b);
     a2bTree.load(sReader);
     sReader.close();
     sReader = new StringReader(b2a);
@@ -210,7 +208,7 @@ public class BrailleAsciiTables {
     sReader = new StringReader(b2u);
     b2uTree.load(sReader);
     sReader.close();
-  } // static
+  } // static initializer
   
   // +----------------+----------------------------------------------
   // | Static methods |
