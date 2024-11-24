@@ -227,17 +227,6 @@ public class BrailleAsciiTables {
    * Convert a bit-representation of Braille to ASCII letters.
    */
   public static String toAscii(String bits) {
-    // Make sure we've loaded the braille-to-ASCII tree.
-    if (null == b2aTree) {
-      b2aTree = new BitTree(6);
-      InputStream b2aStream = new ByteArrayInputStream(b2a.getBytes());
-      b2aTree.load(b2aStream);
-      try {
-        b2aStream.close();
-      } catch (IOException e) {
-        // We don't care if we can't close the stream.
-      } // try/catch
-    } // if
     return "";  // STUB
   } // toAscii(String)
 
