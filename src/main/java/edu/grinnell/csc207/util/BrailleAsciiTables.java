@@ -56,53 +56,57 @@ public class BrailleAsciiTables {
   /**
    *
    */
-  static BitTree a2bTree = null;
+  static BitTree a2bTree;
 
   /**
    *
    */
-  static BitTree b2aTree = null;
+  static BitTree b2aTree;
 
   /**
    *
    */
-  static BitTree b2uTree = null;
+  static BitTree b2uTree;
 
   // +-----------------------+---------------------------------------
   // | Static helper methods |
   // +-----------------------+
 
+  static {
+    // This code definitely calls for better organization.
+    // Perhaps extend the BitTree to include a table?
+    // It's difficult to say what may be best; for now this is good.
+    sReader = new StringReader(a2b);
+    a2bTree.load(sReader);
+    sReader.close();
+    sReader = new StringReader(b2a);
+    b2aTree.load(sReader);
+    sReader.close();
+    sReader = new StringReader(b2u);
+    b2uTree.load(sReader);
+    sReader.close();
+  } // static
+  
   // +----------------+----------------------------------------------
   // | Static methods |
   // +----------------+
 
   /**
-   *
+   * Convert an ASCII letter to a bit-representation of Braille.
    */
   String toBraille(char letter) {
     return "";  // STUB
   } // toBraille(char)
 
   /**
-   *
+   * Convert a bit-representation of Braille to ASCII letters.
    */
   String toAscii(String bits) {
-    // Make sure we've loaded the braille-to-ASCII tree.
-    if (null == b2aTree) {
-      b2aTree = new BitTree(6);
-      InputStream b2aStream = new ByteArrayInputStream(b2a.getBytes());
-      b2aTree.load(b2aStream);
-      try {
-        b2aStream.close();
-      } catch (IOException e) {
-        // We don't care if we can't close the stream.
-      } // try/catch
-    } // if
     return "";  // STUB
   } // toAscii(String)
 
   /**
-   *
+   * Convert a bit-representation of Braille to it's unicode representation.
    */
   String toUnicode(String bits) {
     return "";  // STUB
