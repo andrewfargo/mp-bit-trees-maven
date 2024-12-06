@@ -2,15 +2,13 @@ package edu.grinnell.csc207.experiments;
 
 import edu.grinnell.csc207.util.BitTree;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 
 /**
  * Some experiments with Bit Trees.
  *
- * @author Your Name Here
+ * @author Andrew Fargo
  * @author Samuel A. Rebelsky
  */
 public class BitTreeExperiments {
@@ -141,13 +139,9 @@ public class BitTreeExperiments {
     pen.println("Experiment 02");
     pen.println("-------------");
     BitTree b2aTree = new BitTree(6);
-    InputStream b2aStream = new ByteArrayInputStream(b2a.getBytes());
+    StringReader b2aStream = new StringReader(b2a);
     b2aTree.load(b2aStream);
-    try {
-      b2aStream.close();
-    } catch (IOException e) {
-      // We don't care if we can't close the stream.
-    } // try/catch
+    b2aStream.close();
     get(pen, b2aTree, "100000");
     get(pen, b2aTree, "110000");
     get(pen, b2aTree, "100100");
