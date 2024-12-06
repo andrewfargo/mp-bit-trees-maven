@@ -1,13 +1,11 @@
 package edu.grinnell.csc207.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * A static structure that creates and allows the inspection of
  * Braille-ASCII-Unicode conversion bit trees.
- * 
+ *
  * @author Andrew Fargo
  * @author Samuel A. Rebelsky
  */
@@ -15,6 +13,21 @@ public class BrailleAsciiTables {
   // +-----------+---------------------------------------------------
   // | Constants |
   // +-----------+
+
+  /**
+   * How many dots are in a Braille character.
+   */
+  static final int DOTS = 6;
+
+  /**
+   * How many bits are in an ASCII character.
+   */
+  static final int ASCII_BITS = 8;
+
+  /**
+   * Radix of hexadecimal numbers.
+   */
+  static final int HEX_RADIX = 16;
 
   /**
    * Conversions from ASCII to braille.
@@ -200,6 +213,9 @@ public class BrailleAsciiTables {
 
   static {
     StringReader sReader = new StringReader(a2b);
+    a2bTree = new BitTree(ASCII_BITS);
+    b2aTree = new BitTree(DOTS);
+    b2uTree = new BitTree(DOTS);
     a2bTree.load(sReader);
     sReader.close();
     sReader = new StringReader(b2a);
@@ -209,29 +225,59 @@ public class BrailleAsciiTables {
     b2uTree.load(sReader);
     sReader.close();
   } // static initializer
-  
+
   // +----------------+----------------------------------------------
   // | Static methods |
   // +----------------+
 
   /**
    * Convert an ASCII letter to a bit-representation of Braille.
+   * @param letter The letter to convert.
+   * @return 6 bit string representing the braille character.
    */
   public static String toBraille(char letter) {
-    return "";  // STUB
+    String bitString = Integer.toBinaryString((int) letter);
+    // Zero pad if necessary.
+    bitString = "0".repeat(ASCII_BITS - bitString.length()) + bitString;
+    return a2bTree.get(bitString);
   } // toBraille(char)
 
   /**
    * Convert a bit-representation of Braille to ASCII letters.
+   * @param bits A 6-divisible string representation of Braille bits.
+   * @return A string of what that braille says, provided its valid.
    */
   public static String toAscii(String bits) {
-    return "";  // STUB
+    if (bits.length() % DOTS != 0) {
+      throw new RuntimeException("Provided input is not a valid Braille string.");
+    } // if
+    String result = "";
+    for (int i = 0; i < bits.length() / DOTS; i++) {
+      // Reference string 6 characters at a time.
+      String ascii = b2aTree.get(bits.substring(i * DOTS, (i * DOTS) + DOTS));
+      result += ascii;
+    } // for
+    return result;
   } // toAscii(String)
 
   /**
    * Convert a bit-representation of Braille to it's unicode representation.
+   * @param bits A 6-divisible string representation of Braille bits.
+   * @return A unicode render of that braille.
    */
   public static String toUnicode(String bits) {
-    return "";  // STUB
+    if (bits.length() % DOTS != 0) {
+      throw new RuntimeException("Provided input is not a valid Braille string.");
+    } // if
+    String result = "";
+    for (int i = 0; i < bits.length() / DOTS; i++) {
+      // Reference the string 6 characters at a time.
+      String unicodeHex = b2uTree.get(bits.substring(i * DOTS, (i * DOTS) + DOTS));
+      // Convert from hex to unicode.
+      int codePoint = Integer.parseInt(unicodeHex, HEX_RADIX);
+      String unicodeStr = new String(Character.toChars(codePoint));
+      result += unicodeStr;
+    } // for
+    return result;
   } // toUnicode(String)
 } // BrailleAsciiTables

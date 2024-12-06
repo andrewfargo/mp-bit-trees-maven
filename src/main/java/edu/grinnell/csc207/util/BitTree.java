@@ -2,12 +2,10 @@ package edu.grinnell.csc207.util;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-
-import java.util.Arrays;
-import java.stream.Stream;
+import java.io.Reader;
 
 /**
- * Trees intended to be used in storing mappings between fixed-length 
+ * Trees intended to be used in storing mappings between fixed-length
  * sequences of bits and corresponding values.
  *
  * @author Andrew Fargo
@@ -50,7 +48,7 @@ public class BitTree {
    * Recursively dump the contents of the tree.
    * @param pen The output writer.
    * @param bits The traversals we've taken so far.
-   * @param BitTreeNode The node we're on.
+   * @param node The node we're on.
    */
   private void dumpRecurse(PrintWriter pen, String bits, BitTreeNode node) {
     if (node == null) {
@@ -62,7 +60,7 @@ public class BitTree {
       dumpRecurse(pen, bits + "1", node.traverse('1'));
     } // if/else
   } // dumpRecurse
-  
+
   // +---------+-----------------------------------------------------
   // | Methods |
   // +---------+
@@ -78,21 +76,29 @@ public class BitTree {
     char[] cArray = bits.toCharArray();
     BitTreeNode node = this.head;
 
-    if (cArray.length != depth ||
-	!Arrays.stream(cArr).allMatch(b -> b.equals('0') || b.equals('1'))) {
-      throw new IndexOutOfBoundsException();
+    // Check valid length
+    if (cArray.length != depth) {
+      throw new IndexOutOfBoundsException("Input not of valid length: " + bits);
     } // if
-    
-    // The last element may not be an interior node.
-    Arrays.stream(cArr).limit(depth - 1).forEach(b -> {
-	if (node.traverse(b) == null) {
-	  node.traverse(b) = new BitTreeInteriorNode(null, null);
-	} // if
-	node = node.traverse(b);
-      });
 
-    // Overwrite regardless.
-    node.traverse(bitArr[depth - 1]) = new BitTreeLeaf(value);
+    // Check valid contents
+    for (char c : cArray) {
+      if (c != '0' && c != '1') {
+        throw new IndexOutOfBoundsException("Input contains invalid chars: " + bits);
+      } // if
+    } // for
+
+    // Work our way down.
+    for (int i = 0; i < cArray.length - 1; i++) {
+      char b = cArray[i];
+      if (node.traverse(b) == null) {
+        node.setNode(b, new BitTreeInteriorNode(null, null));
+      } // if
+      node = node.traverse(b);
+    } // for
+
+    // Set the last node.
+    node.setNode(cArray[cArray.length - 1], new BitTreeLeaf(value));
   } // set(String, String)
 
   /**
@@ -103,15 +109,17 @@ public class BitTree {
    * or if the input string is formatted incorrectly.
    */
   public String get(String bits) {
+    char[] bitArray = bits.toCharArray();
     if (bits.length() != depth) {
-      throw new IndexOutOfBoundsException();
+      throw new IndexOutOfBoundsException("Input not of valid length: " + bits);
     } // if
-    Stream<Character> cstream = Arrays.stream(bits.toCharArray());
-    BitTreeNode node = this.head;
-    cstream.forEach(b -> node = node.traverse(b));
-    return node.getValue();
+    BitTreeNode current = this.head;
+    for (char c : bitArray) {
+      current = current.traverse(c);
+    } // for
+    return current.getValue();
   } // get(String, String)
-  
+
   /**
    * Prints the contents of the bit tree in bit order.
    * @param pen The output writer.
@@ -129,6 +137,6 @@ public class BitTree {
    */
   public void load(Reader source) {
     BufferedReader sourceBuf = new BufferedReader(source);
-    source.lines().forEach(l -> this.set(l.substring(0, depth), l.substring(depth)));
+    sourceBuf.lines().forEach(l -> this.set(l.substring(0, depth), l.substring(depth + 1)));
   } // load(InputStream)
 } // class BitTree

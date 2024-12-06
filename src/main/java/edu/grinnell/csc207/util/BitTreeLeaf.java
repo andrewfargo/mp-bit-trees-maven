@@ -5,7 +5,7 @@ package edu.grinnell.csc207.util;
  *
  * @author Andrew Fargo
  */
-public class BitTreeLeaf implements BitTreeNode {
+public final class BitTreeLeaf implements BitTreeNode {
   /**
    * The value of the leaf.
    */
@@ -21,7 +21,7 @@ public class BitTreeLeaf implements BitTreeNode {
   } // BitTreeLeaf(String)
 
   @Override
-  public getValue() {
+  public String getValue() {
     return this.value;
   } // getValue()
 } // BitTreeLeaf
